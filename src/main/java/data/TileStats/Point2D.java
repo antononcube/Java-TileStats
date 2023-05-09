@@ -1,25 +1,25 @@
-//        MIT License
+//   MIT License
 //
-//        Java-TileStats
-//        Copyright (c) 2023 Anton Antonov
+//   Java-TileStats
+//   Copyright (c) 2023 Anton Antonov
 //
-//        Permission is hereby granted, free of charge, to any person obtaining a copy
-//        of this software and associated documentation files (the "Software"), to deal
-//        in the Software without restriction, including without limitation the rights
-//        to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-//        copies of the Software, and to permit persons to whom the Software is
-//        furnished to do so, subject to the following conditions:
+//   Permission is hereby granted, free of charge, to any person obtaining a copy
+//   of this software and associated documentation files (the "Software"), to deal
+//   in the Software without restriction, including without limitation the rights
+//   to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+//   copies of the Software, and to permit persons to whom the Software is
+//   furnished to do so, subject to the following conditions:
 //
-//        The above copyright notice and this permission notice shall be included in all
-//        copies or substantial portions of the Software.
+//   The above copyright notice and this permission notice shall be included in all
+//   copies or substantial portions of the Software.
 //
-//        THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-//        IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-//        FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-//        AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-//        LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-//        OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-//        SOFTWARE.
+//   THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+//   IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+//   FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+//   AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+//   LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+//   OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+//   SOFTWARE.
 
 package main.java.data.TileStats;
 
@@ -48,7 +48,7 @@ public class Point2D {
     }
 
     public double dist(Point2D v) {
-        return dist(v.x, v.y);
+        return dist(v.x, v.getY());
     }
 
     public double dist(double x, double y) {
@@ -73,7 +73,7 @@ public class Point2D {
         return new Point2D("", this.getX() * f, this.getY() * f);
     }
     double dot(Point2D v) {
-        return v.x * x + v.y * y;
+        return v.getX() * x + v.getY() * y;
     }
 
     double dot(double lat1, double lon1) {
@@ -85,7 +85,7 @@ public class Point2D {
     public String toJSON() { return "{ \"id\" :\"" + id + "\", \"x\" : " + x + ", \"y\" : " + y + "}"; }
 
     public static Comparator<Point2D> byDistance(Point2D point) {
-        return byDistance(point.x, point.y);
+        return byDistance(point.getX(), point.getY());
     }
 
     public static Comparator<Point2D> byDistance(double x, double y) {
@@ -98,33 +98,23 @@ public class Point2D {
 
     public static Comparator<Point2D> byEval(Point2D point) {
         return (v1, v2) -> {
-            double d = point.eval(v1.x, v1.y) - point.eval(v2.x, v2.y);
-            return (int)(d  * 1000000d);
+            double d = point.eval(v1.getX(), v1.getY()) - point.eval(v2.getX(), v2.getY());
+            return (int)(d * 1000000d);
         };
     }
 
     public static Comparator<Point2D> byEval(double x, double y) {
         return (v1, v2) -> {
             double d =  v1.eval(x, y) - v2.eval(x, y);
-            return (int)(d  * 1000000d);
+            return (int)(d * 1000000d);
         };
     }
 
+    // This is 1-norm, e.g. Norm[{x1,y1} - {x2,y2}, 1]
     private double eval(double x, double y){
-        double dX = this.x > x ? this.x - x : x - this.x;
-        double dY = this.y > y ? this.y - y : y - this.y;
+        double dX = Math.abs(x - this.getX());
+        double dY = Math.abs(y - this.getY());
         return (dX + dY);
-    }
-
-    public static Point2D closest(Point2D v1, Point2D v2, double x, double y){
-        if(v1 == null){
-            return v2;
-        } else if(v2 == null){
-            return v1;
-        }
-        double d1 = v1.eval(x, y);
-        double d2 = v2.eval(x, y);
-        return d1 < d2 ? v1 : v2;
     }
 
     @Override
