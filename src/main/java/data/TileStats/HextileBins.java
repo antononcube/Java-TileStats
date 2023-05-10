@@ -42,7 +42,7 @@ public class HextileBins {
             new Point2D("2", 1., 0.),
             new Point2D("3", 1. / 2., Math.sqrt(3.) / 2.),
             new Point2D("4", 0., Math.sqrt(3.)),
-            new Point2D("5", 0., Math.sqrt(3.))));
+            new Point2D("5", 1., Math.sqrt(3.))));
 
     public ArrayList<Point2D> referenceHexagon() {
         ArrayList<Point2D> res = new ArrayList<>();
